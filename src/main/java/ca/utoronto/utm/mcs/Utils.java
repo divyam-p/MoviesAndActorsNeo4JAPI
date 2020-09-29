@@ -11,6 +11,6 @@ public class Utils {
  
         try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
             return br.lines().collect(Collectors.joining(System.lineSeparator()));
-    }
+        }
     }
 }

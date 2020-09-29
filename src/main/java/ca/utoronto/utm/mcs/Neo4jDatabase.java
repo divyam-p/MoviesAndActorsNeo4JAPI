@@ -48,21 +48,30 @@ public class Neo4jDatabase {
   
   public int insertRelationship(String actorID, String movieID) { 
     try(Session session = driver.session()){
-      /* 
-      List<String> list = session.writeTransaction(tx -> tx.run("MATCH(n)\nRETURN(n)")).single().keys();
-      for(int i = 0; i < list.size(); i++) { 
-        System.out.println(list.get(i)); 
+      
+
+      Result result = session.writeTransaction(tx -> tx.run("MATCH(j:actor{id:$x}) RETURN j", parameters("x", 60)));
+
+      if(result.hasNext()) {
+        System.out.println("hi");
       }
-      */
-      session.writeTransaction(tx -> tx.run("MATCH (a:actor {id:$x}),"
-          + "(b:movie {id:$y})\n" + 
-           "MERGE (a)-[r:WORK]->(b)\n" + 
-           "RETURN r", parameters("x", actorID, "y", movieID)));
-      return 0; 
+      else {
+        System.out.println("Hello");
+      }
+      return 0;
+//      try(Session session2 = driver.session()){
+//        session2.writeTransaction(tx -> tx.run("MATCH (a:actor {id:$x}),"
+//            + "(b:movie {id:$y})\n" + 
+//             "MERGE (a)-[r:WORK]->(b)\n" + 
+//             "RETURN r", parameters("x", actorID, "y", movieID)));
+//        return 0; 
+//      }
+//      catch(Exception e) {
+//        return 1;
+//      }
     }
     catch(Exception e){
       return 1;
     }
   }
-  
 }
