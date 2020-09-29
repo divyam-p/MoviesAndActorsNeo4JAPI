@@ -38,7 +38,7 @@ public class AddActor implements HttpHandler
     }
     
     
-    if(!deserialized.has("Name") || !deserialized.has("id") || deserialized.length() != 2) {
+    if(!deserialized.has("Name") || !deserialized.has("id")) {
       r.sendResponseHeaders(400, 16);
       OutputStream os = r.getResponseBody();
       os.write("400 BAD REQUEST\n".getBytes());
