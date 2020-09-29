@@ -48,27 +48,44 @@ public class Neo4jDatabase {
   
   public int insertRelationship(String actorID, String movieID) { 
     try(Session session = driver.session()){
-      
-
-      Result result = session.writeTransaction(tx -> tx.run("MATCH(j:actor{id:$x}) RETURN j", parameters("x", 60)));
-
-      if(result.hasNext()) {
-        System.out.println("hi");
+      try(Transaction tx = session.beginTransaction()){ 
+        Result result = tx.run("MATCH (j:actor {id:$x}) \nRETURN j", parameters("x", actorID)); 
+        if(!result.hasNext()) {
+          return 2; 
+        }
+        Result result2 = tx.run("MATCH (k:movie {id:$x}) \nRETURN k", parameters("x", movieID)); 
+        if(!result2.hasNext()) { 
+          return 2; 
+        }
+        tx.close();
+      }catch(Exception e){ 
+        return 1; 
       }
-      else {
-        System.out.println("Hello");
-      }
+      session.writeTransaction(tx -> tx.run("MATCH (a:actor {id:$x})," + "(b:movie {id:$y})\n" + "MERGE (a)-[r:WORK]->(b)\n" + "RETURN r", parameters("x", actorID, "y", movieID))); 
+      session.close(); 
       return 0;
-//      try(Session session2 = driver.session()){
-//        session2.writeTransaction(tx -> tx.run("MATCH (a:actor {id:$x}),"
-//            + "(b:movie {id:$y})\n" + 
-//             "MERGE (a)-[r:WORK]->(b)\n" + 
-//             "RETURN r", parameters("x", actorID, "y", movieID)));
-//        return 0; 
-//      }
-//      catch(Exception e) {
-//        return 1;
-//      }
+    }
+    catch(Exception e){
+      return 1;
+    }
+  }
+  
+  public int getActor(String actorID) { 
+    try(Session session = driver.session()){
+      try(Transaction tx = session.beginTransaction()){ 
+        Result result = tx.run("MATCH (j:actor {id:$x}) \nRETURN j", parameters("x", actorID)); 
+        if(!result.hasNext()) {
+          return 2; 
+        }
+        Result result2 = tx.run("MATCH (:actor {id:$x})-->(movie) \nRETURN movie.id", parameters("x", actorID)); 
+        //Result result2 = tx.run("MATCH (a:actor {id:$x})-[:WORK]->(movie) RETURN a,movie", parameters("x", actorID)); 
+        System.out.println(result2.keys()); 
+        tx.close();
+      }catch(Exception e){ 
+        return 1; 
+      }
+      session.close(); 
+      return 0;
     }
     catch(Exception e){
       return 1;
