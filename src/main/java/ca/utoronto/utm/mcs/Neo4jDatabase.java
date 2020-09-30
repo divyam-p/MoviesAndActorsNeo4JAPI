@@ -72,15 +72,24 @@ public class Neo4jDatabase {
   }
   
   public int getActor(String actorID) { 
+    this.Response = "";
     try(Session session = driver.session()){
       try(Transaction tx = session.beginTransaction()){ 
-        Result result = tx.run("MATCH (j:actor {id:$x}) \nRETURN j", parameters("x", actorID)); 
+        Result result = tx.run("MATCH (j:actor {id:$x}) \nRETURN j.Name", parameters("x", actorID)); 
         if(!result.hasNext()) {
           return 2; 
         }
         int temp = 0; 
+        //System.out.println("HERE " + result.next().toString());
+//        Value letsee = result.next().get("j");
+//        System.out.println("HERE: " + letsee.toString());
+        
+        
         this.Response = "{\n    \"actorId\": \""  + actorID + "\", \n    \"name\": \"" + result.next().get("j.Name").asString() + "\",\n    \"movies\": [\n" ;
+        
         Result result2 = tx.run("MATCH (:actor {id:$x})-->(movie) \nRETURN movie.id", parameters("x", actorID)); 
+        
+        //System.out.println("HERE2 " + result2.next().toString());
         //Result result2 = tx.run("MATCH (a:actor {id:$x})-[:WORK]->(movie) RETURN a,movie", parameters("x", actorID)); 
         while(result2.hasNext()){ 
           temp = 1; 
@@ -103,7 +112,82 @@ public class Neo4jDatabase {
     }
   }
   
-  public String getResponce() { 
+  public int getMovie(String movieID) {
+    this.Response = "";
+    try(Session session = driver.session()){
+      try(Transaction tx = session.beginTransaction()){
+        
+        Result result = tx.run("MATCH (j:movie {id:$x}) \n RETURN j.Name", parameters("x", movieID));
+        if(!result.hasNext()) {
+          return 2;
+        }
+        int temp = 0;
+        
+        this.Response = "{\n    \"movieId\": \""  + movieID + "\", \n    \"name\": \"" + result.next().get("j.Name").asString() + "\",\n    \"actors\": [\n" ;
+        
+         
+        Result result2 = tx.run("MATCH (:movie {id:$x})<--(actor) \n return actor.id", parameters("x", movieID));
+        //System.out.println("HERE: " + result2.next().toString());
+        while(result2.hasNext()) {
+          temp = 1;
+          this.Response += "          \"" + result2.next().get("actor.id").asString() + "\",\n"; 
+        }
+        if(temp == 1) {
+          this.Response += "          ...\n"; 
+        }
+        this.Response += "    ]\n}\n";
+        tx.close();
+      }catch(Exception e) {
+        return 1;
+      }
+      session.close();
+      return 0;
+      
+    }catch(Exception e) {
+      return 1;
+    }
+  }
+  
+  
+  public int hasRelationship(String actorID, String movieID) {
+    this.Response = "";
+    try(Session session = driver.session()){
+      try(Transaction tx = session.beginTransaction()){
+        
+        Result result = tx.run("MATCH (j:actor{id:\"60\"}) -[r]->(m:movie{id:\"15\"}) RETURN r");
+        
+        this.Response += "{\n    \"actorId\": \"" + actorID + "\", \n    \"movieId: \"" + movieID + "\"\n    \"hasRelationship\": ";
+        
+        
+        if(result.hasNext()) {
+          tx.close();
+          session.close();
+          this.Response += "true\n";
+          this.Response += "}\n";
+          return 0;
+        }
+        else {
+          tx.close();
+          session.close();
+          this.Response += "false\n";
+          this.Response += "}\n";
+          return 1;
+        }
+        
+      }catch(Exception e) {
+        session.close();
+        return 2;
+      }
+
+    }catch(Exception e) {
+      return 2;
+     
+    }
+  }
+  
+  
+  
+  public String getResponse() { 
     return this.Response; 
   }
 }
