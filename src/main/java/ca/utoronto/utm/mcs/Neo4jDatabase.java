@@ -16,6 +16,7 @@ public class Neo4jDatabase {
   
   private Driver driver;
   private String uriDb;
+  private String Response;
   
   public Neo4jDatabase() {
     uriDb = "bolt://localhost:7687";
@@ -77,9 +78,19 @@ public class Neo4jDatabase {
         if(!result.hasNext()) {
           return 2; 
         }
+        int temp = 0; 
+        this.Response = "{\n    \"actorId\": \""  + actorID + "\", \n    \"name\": \"" + result.next().get("j.Name").asString() + "\",\n    \"movies\": [\n" ;
         Result result2 = tx.run("MATCH (:actor {id:$x})-->(movie) \nRETURN movie.id", parameters("x", actorID)); 
         //Result result2 = tx.run("MATCH (a:actor {id:$x})-[:WORK]->(movie) RETURN a,movie", parameters("x", actorID)); 
-        System.out.println(result2.keys()); 
+        while(result2.hasNext()){ 
+          temp = 1; 
+          this.Response += "          \"" + result2.next().get("movie.id").asString() + "\",\n"; 
+        }
+        if(temp == 1) { 
+          this.Response += "          ...\n"; 
+        }
+        this.Response += "    ]\n}\n"; 
+        System.out.println(this.Response); 
         tx.close();
       }catch(Exception e){ 
         return 1; 
@@ -90,5 +101,9 @@ public class Neo4jDatabase {
     catch(Exception e){
       return 1;
     }
+  }
+  
+  public String getResponce() { 
+    return this.Response; 
   }
 }

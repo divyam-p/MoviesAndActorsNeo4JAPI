@@ -40,6 +40,7 @@ public class GetActor implements HttpHandler{
     else { 
       Neo4jDatabase neo = new Neo4jDatabase();
       int neoReturn = neo.getActor(actorID);
+      String responce = neo.getResponce(); 
       
       if(neoReturn == 1) {
         r.sendResponseHeaders(200, 26);
@@ -54,9 +55,9 @@ public class GetActor implements HttpHandler{
         os.close(); 
       }
       else {
-        r.sendResponseHeaders(500, 7);
+        r.sendResponseHeaders(500, 7 + responce.length());
         OutputStream os = r.getResponseBody();
-        os.write("200 Ok\n".getBytes());
+        os.write(("200 Ok\n" + responce).getBytes());
         os.close();
       }
     }
