@@ -55,6 +55,12 @@ public class ComputeBaconNumber implements HttpHandler{
         os.write("404 BAD REQUEST\n".getBytes());
         os.close(); 
       }
+      else if(neoReturn == 3) { 
+        r.sendResponseHeaders(400, 16);
+        OutputStream os = r.getResponseBody(); 
+        os.write("400 BAD REQUEST\n".getBytes());
+        os.close(); 
+      }
       else {
         r.sendResponseHeaders(200, response.toString().length());
         OutputStream os = r.getResponseBody();

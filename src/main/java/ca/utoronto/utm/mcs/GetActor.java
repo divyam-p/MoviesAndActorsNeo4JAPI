@@ -43,7 +43,7 @@ public class GetActor implements HttpHandler{
       String response = neo.getResponse(); 
       
       if(neoReturn == 1) {
-        r.sendResponseHeaders(200, 26);
+        r.sendResponseHeaders(500, 26);
         OutputStream os = r.getResponseBody();
         os.write("500 INTERNAL SERVER ERROR\n".getBytes());
         os.close();
@@ -55,7 +55,7 @@ public class GetActor implements HttpHandler{
         os.close(); 
       }
       else {
-        r.sendResponseHeaders(500, 7 + response.length());
+        r.sendResponseHeaders(200, 7 + response.length());
         OutputStream os = r.getResponseBody();
         os.write(("200 Ok\n" + response).getBytes());
         os.close();
