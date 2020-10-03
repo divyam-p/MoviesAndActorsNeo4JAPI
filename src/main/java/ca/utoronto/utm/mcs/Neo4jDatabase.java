@@ -190,14 +190,14 @@ public class Neo4jDatabase {
         if(result.hasNext()) {
           tx.close();
           session.close();
-          deserialized.put("hasRelationship", "true");
+          deserialized.put("hasRelationship", true);
           this.Response += "true\n";
           return 0;
         }
         else {
           tx.close();
           session.close();
-          deserialized.put("hasRelationship", "false");
+          deserialized.put("hasRelationship", false);
           return 0;
         }
         
