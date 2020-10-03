@@ -29,37 +29,23 @@ public class AddActor implements HttpHandler
     
     String actor = "";
     String actorID = "";
-    if(deserialized.has("Name")) {
-      actor = deserialized.getString("Name");
-      
+    if(deserialized.has("name")) {
+      actor = deserialized.getString("name"); 
     }
-    if(deserialized.has("id")) {
-      actorID = deserialized.getString("id");
-    }
-    
-    
-    if(!deserialized.has("Name") || !deserialized.has("id")) {
+    if(deserialized.has("actorId")) {
+      actorID = deserialized.getString("actorId");
+    } 
+    if(!deserialized.has("name") || !deserialized.has("actorId")) {
       r.sendResponseHeaders(400, 16);
-      OutputStream os = r.getResponseBody();
-      os.write("400 BAD REQUEST\n".getBytes());
-      os.close();
     }
     else {
       Neo4jDatabase neo = new Neo4jDatabase();
-      
-      
       int neoReturn = neo.insertActor(actor, actorID);
       if(neoReturn == 1) {
         r.sendResponseHeaders(500, 26);
-        OutputStream os = r.getResponseBody();
-        os.write("500 INTERNAL SERVER ERROR\n".getBytes());
-        os.close();
       }
       else {
         r.sendResponseHeaders(200, 7);
-        OutputStream os = r.getResponseBody();
-        os.write("200 Ok\n".getBytes());
-        os.close();
       }
     }
 

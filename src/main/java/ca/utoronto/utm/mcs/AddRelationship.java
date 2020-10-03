@@ -38,32 +38,19 @@ public class AddRelationship implements HttpHandler{
     
     if(!deserialized.has("actorId") || !deserialized.has("movieId")) {
       r.sendResponseHeaders(400, 16);
-      OutputStream os = r.getResponseBody();
-      os.write("400 BAD REQUEST\n".getBytes());
-      os.close();
     }
     else {
       Neo4jDatabase neo = new Neo4jDatabase();
-      
-      
       int neoReturn = neo.insertRelationship(actorID, movieID);
+      
       if(neoReturn == 1) {
-        r.sendResponseHeaders(200, 26);
-        OutputStream os = r.getResponseBody();
-        os.write("500 INTERNAL SERVER ERROR\n".getBytes());
-        os.close();
+        r.sendResponseHeaders(500, 26);
       }
       else if(neoReturn == 2) { 
         r.sendResponseHeaders(404, 16);
-        OutputStream os = r.getResponseBody(); 
-        os.write("404 BAD REQUEST\n".getBytes());
-        os.close(); 
       }
       else {
-        r.sendResponseHeaders(500, 7);
-        OutputStream os = r.getResponseBody();
-        os.write("200 Ok\n".getBytes());
-        os.close();
+        r.sendResponseHeaders(200, 7);
       }
     }
   }

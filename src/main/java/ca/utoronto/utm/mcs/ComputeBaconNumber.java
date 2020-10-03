@@ -33,9 +33,6 @@ public class ComputeBaconNumber implements HttpHandler{
     
     if(!deserialized.has("actorId")) {
       r.sendResponseHeaders(400, 16);
-      OutputStream os = r.getResponseBody();
-      os.write("400 BAD REQUEST\n".getBytes());
-      os.close();
     }
    
     else { 
@@ -45,21 +42,12 @@ public class ComputeBaconNumber implements HttpHandler{
       
       if(neoReturn == 1) {
         r.sendResponseHeaders(500, 26);
-        OutputStream os = r.getResponseBody();
-        os.write("500 INTERNAL SERVER ERROR\n".getBytes());
-        os.close();
       }
       else if(neoReturn == 2) { 
         r.sendResponseHeaders(404, 16);
-        OutputStream os = r.getResponseBody(); 
-        os.write("404 BAD REQUEST\n".getBytes());
-        os.close(); 
       }
       else if(neoReturn == 3) { 
         r.sendResponseHeaders(400, 16);
-        OutputStream os = r.getResponseBody(); 
-        os.write("400 BAD REQUEST\n".getBytes());
-        os.close(); 
       }
       else {
         r.sendResponseHeaders(200, response.toString().length());

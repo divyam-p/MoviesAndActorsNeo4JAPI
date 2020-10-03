@@ -28,20 +28,17 @@ public class AddMovie implements HttpHandler{
     
     String movie = "";
     String movieID = "";
-    if(deserialized.has("Name")) {
-      movie = deserialized.getString("Name");
+    if(deserialized.has("name")) {
+      movie = deserialized.getString("name");
       
     }
-    if(deserialized.has("id")) {
-      movieID = deserialized.getString("id");
+    if(deserialized.has("movieId")) {
+      movieID = deserialized.getString("movieId");
     }
     
     
-    if(!deserialized.has("Name") || !deserialized.has("id")) {
+    if(!deserialized.has("name") || !deserialized.has("movieId")) {
       r.sendResponseHeaders(400, 16);
-      OutputStream os = r.getResponseBody();
-      os.write("400 BAD REQUEST\n".getBytes());
-      os.close();
     }
     else {
       Neo4jDatabase neo = new Neo4jDatabase();
@@ -50,19 +47,10 @@ public class AddMovie implements HttpHandler{
       int neoReturn = neo.insertMovie(movie, movieID);
       if(neoReturn == 1) {
         r.sendResponseHeaders(500, 26);
-        OutputStream os = r.getResponseBody();
-        os.write("500 INTERNAL SERVER ERROR\n".getBytes());
-        os.close();
       }
       else {
         r.sendResponseHeaders(200, 7);
-        OutputStream os = r.getResponseBody();
-        os.write("200 Ok\n".getBytes());
-        os.close();
       }
     }
-    
-
-    
   }
 }

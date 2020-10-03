@@ -33,31 +33,23 @@ public class GetActor implements HttpHandler{
     
     if(!deserialized.has("actorId")) {
       r.sendResponseHeaders(400, 16);
-      OutputStream os = r.getResponseBody();
-      os.write("400 BAD REQUEST\n".getBytes());
-      os.close();
     }
     else { 
       Neo4jDatabase neo = new Neo4jDatabase();
       int neoReturn = neo.getActor(actorID);
-      String response = neo.getResponse(); 
+      JSONObject response = neo.getJSON(); 
       
       if(neoReturn == 1) {
         r.sendResponseHeaders(500, 26);
-        OutputStream os = r.getResponseBody();
-        os.write("500 INTERNAL SERVER ERROR\n".getBytes());
-        os.close();
       }
       else if(neoReturn == 2) { 
         r.sendResponseHeaders(404, 16);
-        OutputStream os = r.getResponseBody(); 
-        os.write("404 BAD REQUEST\n".getBytes());
-        os.close(); 
+
       }
       else {
-        r.sendResponseHeaders(200, 7 + response.length());
+        r.sendResponseHeaders(200, response.toString().length());
         OutputStream os = r.getResponseBody();
-        os.write(("200 Ok\n" + response).getBytes());
+        os.write((response.toString()).getBytes());
         os.close();
       }
     }
