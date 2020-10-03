@@ -1,10 +1,11 @@
-package ca.utoronto.utm.mcs;
+package main.java.ca.utoronto.utm.mcs;
 
 import java.io.IOException;
 import java.sql.Driver;
 import java.io.OutputStream;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import ca.utoronto.utm.mcs.Utils;
 import org.json.JSONException;
 import org.json.JSONObject;
 

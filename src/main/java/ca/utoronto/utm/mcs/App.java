@@ -1,4 +1,4 @@
-package ca.utoronto.utm.mcs;
+package main.java.ca.utoronto.utm.mcs;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
