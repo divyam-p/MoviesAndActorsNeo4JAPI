@@ -35,12 +35,11 @@ public class Neo4jDatabase {
         Result result = tx.run("MATCH (j:actor {id:$x}) \nRETURN j", parameters("x", id)); 
         Result result2 = tx.run("MATCH (j:actor {name:$x}) \nRETURN j", parameters("x", name)); 
         if(result.hasNext() || result2.hasNext()){
-          return 1;
+          return 2;
         }
       }catch(Exception e) {
         return 1;
       }
-      
       session.writeTransaction(tx -> tx.run("MERGE (a:actor {name: $x, id: $y})"
           , parameters("x", name, "y", id)));
       session.close();
@@ -50,7 +49,7 @@ public class Neo4jDatabase {
       return 1;
     }
   }
-  //Temp
+ 
   public int insertMovie(String name, String id) {
     try(Session session = driver.session()){
       
@@ -58,7 +57,7 @@ public class Neo4jDatabase {
         Result result = tx.run("MATCH (j:movie {id:$x}) \nRETURN j", parameters("x", id)); 
         Result result2 = tx.run("MATCH (j:movie {name:$x}) \nRETURN j", parameters("x", name)); 
         if(result.hasNext() || result2.hasNext()){
-          return 1;
+          return 2;
         }
       }catch(Exception e) {
         return 1;
@@ -89,8 +88,7 @@ public class Neo4jDatabase {
             "RETURN path;", parameters("x", actorID, "y", movieID)); 
         if(result3.hasNext()) {
           return 3;
-        }
-        
+        }   
         tx.close();
       }catch(Exception e){ 
         return 1; 
@@ -218,18 +216,18 @@ public class Neo4jDatabase {
   public int computeBaconNumber(String actorID) {
     try(Session session = driver.session()){
       try(Transaction tx = session.beginTransaction()){
-        Result result2 = tx.run("MATCH (j:actor {id:$x}) \nRETURN j.name", parameters("x", actorID)); 
+        Result result2 = tx.run("MATCH (j:actor {id:$x}) \nRETURN j.id", parameters("x", actorID)); 
         if(!result2.hasNext()) { 
           return 3; 
         }
-        else if(result2.next().get("j.name").toString().equals("\"Kevin Bacon\"")){ 
+        else if(result2.next().get("j.id").toString().equals("\"nm0000102\"")){ 
           deserialized.put("baconNumber", "0");
           tx.close();
           session.close();
           return 0;
         }
         Result result = tx.run("MATCH (start:actor {id:$x}),(KevBac:actor "
-            + "{name: 'Kevin Bacon' }), p = "
+            + "{id: \"nm0000102\" }), p = "
             + "shortestPath((start)-[*..]-(KevBac)) RETURN p", 
             parameters("x", actorID));
         
@@ -281,10 +279,9 @@ public class Neo4jDatabase {
           session.close();
           return 0; 
         }
-        Result result = tx.run("MATCH (start:actor {id:$x}),(KevBac:actor {name: 'Kevin Bacon' }), p = shortestPath((start)-[*..]-(KevBac)) return [node in nodes(p) | node.id] as nodesInPath", parameters("x", actorID));
+        Result result = tx.run("MATCH (start:actor {id:$x}),(KevBac:actor {id: \"nm0000102\" }), p = shortestPath((start)-[*..]-(KevBac)) return [node in nodes(p) | node.id] as nodesInPath", parameters("x", actorID));
         
         Value temp = result.next().get("nodesInPath");
-        System.out.println(temp); 
         
         for(int i = 1; i < temp.size(); i+=2) { 
           if(i%2==1) { 

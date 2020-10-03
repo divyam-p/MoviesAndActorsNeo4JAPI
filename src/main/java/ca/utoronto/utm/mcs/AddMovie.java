@@ -38,7 +38,7 @@ public class AddMovie implements HttpHandler{
     
     
     if(!deserialized.has("name") || !deserialized.has("movieId")) {
-      r.sendResponseHeaders(400, 0);
+      r.sendResponseHeaders(400, -1);
     }
     else {
       Neo4jDatabase neo = new Neo4jDatabase();
@@ -46,10 +46,13 @@ public class AddMovie implements HttpHandler{
       
       int neoReturn = neo.insertMovie(movie, movieID);
       if(neoReturn == 1) {
-        r.sendResponseHeaders(500, 0);
+        r.sendResponseHeaders(500, -1);
+      }
+      else if(neoReturn == 2) { 
+        r.sendResponseHeaders(400, -1);
       }
       else {
-        r.sendResponseHeaders(200, 0);
+        r.sendResponseHeaders(200, -1);
       }
     }
   }

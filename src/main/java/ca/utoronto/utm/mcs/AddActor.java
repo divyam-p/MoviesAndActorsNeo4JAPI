@@ -1,4 +1,4 @@
-package main.java.ca.utoronto.utm.mcs;
+package ca.utoronto.utm.mcs;
 
 import java.io.IOException;
 import java.sql.Driver;
@@ -37,16 +37,19 @@ public class AddActor implements HttpHandler
       actorID = deserialized.getString("actorId");
     } 
     if(!deserialized.has("name") || !deserialized.has("actorId")) {
-      r.sendResponseHeaders(400, 0);
+      r.sendResponseHeaders(400, -1);
     }
     else {
       Neo4jDatabase neo = new Neo4jDatabase();
       int neoReturn = neo.insertActor(actor, actorID);
       if(neoReturn == 1) {
-        r.sendResponseHeaders(500, 0);
+        r.sendResponseHeaders(500, -1);
+      }
+      else if(neoReturn == 2) { 
+        r.sendResponseHeaders(400, -1);
       }
       else {
-        r.sendResponseHeaders(200, 0);
+        r.sendResponseHeaders(200, -1);
       }
     }
 

@@ -38,7 +38,7 @@ public class HasRelationship implements HttpHandler{
     
     
     if(!deserialized.has("actorId") || !deserialized.has("movieId")) {
-      r.sendResponseHeaders(400, 0);
+      r.sendResponseHeaders(400, -1);
     }
     else {
       Neo4jDatabase neo = new Neo4jDatabase();
@@ -46,10 +46,10 @@ public class HasRelationship implements HttpHandler{
       JSONObject response = neo.getJSON(); 
       
       if(neoReturn == 1) {
-        r.sendResponseHeaders(500, 0);
+        r.sendResponseHeaders(500, -1);
       }
       else if(neoReturn == 2) { 
-        r.sendResponseHeaders(404, 0);
+        r.sendResponseHeaders(404, -1);
       }
       else {
         r.sendResponseHeaders(200, response.toString().length());
