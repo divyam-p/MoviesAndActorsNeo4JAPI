@@ -32,7 +32,7 @@ public class ComputeBaconNumber implements HttpHandler{
     
     
     if(!deserialized.has("actorId")) {
-      r.sendResponseHeaders(400, 16);
+      r.sendResponseHeaders(400, 0);
     }
    
     else { 
@@ -41,13 +41,13 @@ public class ComputeBaconNumber implements HttpHandler{
       JSONObject response = neo.getJSON(); 
       
       if(neoReturn == 1) {
-        r.sendResponseHeaders(500, 26);
+        r.sendResponseHeaders(500, 0);
       }
       else if(neoReturn == 2) { 
-        r.sendResponseHeaders(404, 16);
+        r.sendResponseHeaders(404, 0);
       }
       else if(neoReturn == 3) { 
-        r.sendResponseHeaders(400, 16);
+        r.sendResponseHeaders(400, 0);
       }
       else {
         r.sendResponseHeaders(200, response.toString().length());

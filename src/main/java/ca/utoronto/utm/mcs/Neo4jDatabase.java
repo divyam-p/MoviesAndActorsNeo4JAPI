@@ -31,6 +31,16 @@ public class Neo4jDatabase {
   
   public int insertActor(String name, String id) {
     try(Session session = driver.session()){
+      try(Transaction tx = session.beginTransaction()){ 
+        Result result = tx.run("MATCH (j:actor {id:$x}) \nRETURN j", parameters("x", id)); 
+        Result result2 = tx.run("MATCH (j:actor {name:$x}) \nRETURN j", parameters("x", name)); 
+        if(result.hasNext() || result2.hasNext()){
+          return 1;
+        }
+      }catch(Exception e) {
+        return 1;
+      }
+      
       session.writeTransaction(tx -> tx.run("MERGE (a:actor {name: $x, id: $y})"
           , parameters("x", name, "y", id)));
       session.close();
@@ -40,9 +50,19 @@ public class Neo4jDatabase {
       return 1;
     }
   }
-  
+  //Temp
   public int insertMovie(String name, String id) {
     try(Session session = driver.session()){
+      
+      try(Transaction tx = session.beginTransaction()){ 
+        Result result = tx.run("MATCH (j:movie {id:$x}) \nRETURN j", parameters("x", id)); 
+        Result result2 = tx.run("MATCH (j:movie {name:$x}) \nRETURN j", parameters("x", name)); 
+        if(result.hasNext() || result2.hasNext()){
+          return 1;
+        }
+      }catch(Exception e) {
+        return 1;
+      }
       session.writeTransaction(tx -> tx.run("MERGE (a:movie {name: $x, id: $y})"
           , parameters("x", name, "y", id)));
       session.close();
@@ -52,6 +72,7 @@ public class Neo4jDatabase {
       return 1;
     }
   }
+  
   
   public int insertRelationship(String actorID, String movieID) { 
     try(Session session = driver.session()){
@@ -64,6 +85,12 @@ public class Neo4jDatabase {
         if(!result2.hasNext()) { 
           return 2; 
         }
+        Result result3 = tx.run("MATCH path=(a:actor {id: $x})-[r:ACTED_IN]-(b:movie {id: $y})\r\n" + 
+            "RETURN path;", parameters("x", actorID, "y", movieID)); 
+        if(result3.hasNext()) {
+          return 3;
+        }
+        
         tx.close();
       }catch(Exception e){ 
         return 1; 
@@ -146,8 +173,12 @@ public class Neo4jDatabase {
       try(Transaction tx = session.beginTransaction()){
         
         
-        // Check if actor and movie exists
+        Result result2 = tx.run("MATCH (j:actor {id:$x}) \nRETURN j", parameters("x", actorID)); 
+        Result result3 = tx.run("MATCH (j:movie {id:$x}) \nRETURN j", parameters("x", movieID)); 
         
+        if(!result2.hasNext() || !result3.hasNext()) {
+          return 2;
+        }
         
         
         Result result = tx.run("MATCH (j:actor{id:$x}) -[r]->(m:movie{id:$y}) RETURN r", parameters("x", actorID, "y", movieID));
@@ -169,7 +200,7 @@ public class Neo4jDatabase {
           tx.close();
           session.close();
           deserialized.put("hasRelationship", "false");
-          return 2;
+          return 0;
         }
         
       }catch(Exception e) {
@@ -201,7 +232,11 @@ public class Neo4jDatabase {
             + "{name: 'Kevin Bacon' }), p = "
             + "shortestPath((start)-[*..]-(KevBac)) RETURN p", 
             parameters("x", actorID));
-        int size = result.next().get("p").size();
+        
+        if(!result.hasNext()) {
+          return 2;
+        }
+        int size = result.next().get("p").size()/2;
         String newSize = Integer.toString(size);    
         deserialized.put("baconNumber", newSize);
         tx.close();
@@ -221,20 +256,19 @@ public class Neo4jDatabase {
     deserialized = new JSONObject();
     try(Session session = driver.session()){
       try(Transaction tx = session.beginTransaction()){
-        
-        
-        // CHECK IF ACTOR ALREADY EXISTS
-        Result result3 = tx.run("MATCH (j:actor {id:$x}) \nRETURN j.name", parameters("x", actorID)); 
-        if(!result3.hasNext()) { 
-          return 3; 
-        }
-        
-        
         ArrayList<JSONObject> tracker = new ArrayList<>(); 
+        
         int returnValue = this.computeBaconNumber(actorID); 
         if(returnValue == 1) { 
           return 1; 
         }
+        else if(returnValue == 2) {
+          return 2;
+        }
+        else if(returnValue == 3) {
+          return 3;
+        }
+        
         if(this.deserialized.getInt("baconNumber") == 0) { 
           Result result2 = tx.run("MATCH (:actor {id:$x})-->(movie) \nRETURN movie.id", parameters("x", actorID)); 
           JSONObject temporary = new JSONObject();

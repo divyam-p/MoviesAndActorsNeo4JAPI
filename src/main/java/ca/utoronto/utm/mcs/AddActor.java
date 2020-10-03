@@ -36,16 +36,16 @@ public class AddActor implements HttpHandler
       actorID = deserialized.getString("actorId");
     } 
     if(!deserialized.has("name") || !deserialized.has("actorId")) {
-      r.sendResponseHeaders(400, 16);
+      r.sendResponseHeaders(400, 0);
     }
     else {
       Neo4jDatabase neo = new Neo4jDatabase();
       int neoReturn = neo.insertActor(actor, actorID);
       if(neoReturn == 1) {
-        r.sendResponseHeaders(500, 26);
+        r.sendResponseHeaders(500, 0);
       }
       else {
-        r.sendResponseHeaders(200, 7);
+        r.sendResponseHeaders(200, 0);
       }
     }
 
