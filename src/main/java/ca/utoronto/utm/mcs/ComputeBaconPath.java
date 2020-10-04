@@ -19,7 +19,6 @@ public class ComputeBaconPath implements HttpHandler{
     
   }
   
-  
   private void handleGet(HttpExchange r) throws IOException, JSONException {
     String body = Utils.convert(r.getRequestBody());
     JSONObject deserialized = new JSONObject(body);
@@ -52,9 +51,7 @@ public class ComputeBaconPath implements HttpHandler{
         os.write((response.toString()).getBytes());
         os.close();
       }
-    }
-
-    
+    }  
   }
-  
+
 }

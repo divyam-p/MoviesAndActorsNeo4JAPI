@@ -31,7 +31,6 @@ public class GetMovie implements HttpHandler{
       actorID = deserialized.getString("movieId");
     }
     
-    
     if(!deserialized.has("movieId")) {
       r.sendResponseHeaders(400, -1);
     }
@@ -52,9 +51,7 @@ public class GetMovie implements HttpHandler{
         os.write((response.toString()).getBytes());
         os.close();
       }
-    }
-    
-    
+    }  
   }
 
 }

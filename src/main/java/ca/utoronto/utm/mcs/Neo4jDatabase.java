@@ -32,8 +32,10 @@ public class Neo4jDatabase {
   public int insertActor(String name, String id) {
     try(Session session = driver.session()){
       try(Transaction tx = session.beginTransaction()){ 
-        Result result = tx.run("MATCH (j:actor {id:$x}) \nRETURN j", parameters("x", id)); 
-        Result result2 = tx.run("MATCH (j:actor {name:$x}) \nRETURN j", parameters("x", name)); 
+        Result result = tx.run("MATCH (j:actor {id:$x}) \nRETURN j", 
+            parameters("x", id)); 
+        Result result2 = tx.run("MATCH (j:actor {name:$x}) \nRETURN j", 
+            parameters("x", name)); 
         if(result.hasNext() || result2.hasNext()){
           return 2;
         }
@@ -54,8 +56,10 @@ public class Neo4jDatabase {
     try(Session session = driver.session()){
       
       try(Transaction tx = session.beginTransaction()){ 
-        Result result = tx.run("MATCH (j:movie {id:$x}) \nRETURN j", parameters("x", id)); 
-        Result result2 = tx.run("MATCH (j:movie {name:$x}) \nRETURN j", parameters("x", name)); 
+        Result result = tx.run("MATCH (j:movie {id:$x}) \nRETURN j", 
+            parameters("x", id)); 
+        Result result2 = tx.run("MATCH (j:movie {name:$x}) \nRETURN j", 
+            parameters("x", name)); 
         if(result.hasNext() || result2.hasNext()){
           return 2;
         }
@@ -76,15 +80,18 @@ public class Neo4jDatabase {
   public int insertRelationship(String actorID, String movieID) { 
     try(Session session = driver.session()){
       try(Transaction tx = session.beginTransaction()){ 
-        Result result = tx.run("MATCH (j:actor {id:$x}) \nRETURN j", parameters("x", actorID)); 
+        Result result = tx.run("MATCH (j:actor {id:$x}) \nRETURN j", 
+            parameters("x", actorID)); 
         if(!result.hasNext()) {
           return 2; 
         }
-        Result result2 = tx.run("MATCH (k:movie {id:$x}) \nRETURN k", parameters("x", movieID)); 
+        Result result2 = tx.run("MATCH (k:movie {id:$x}) \nRETURN k", 
+            parameters("x", movieID)); 
         if(!result2.hasNext()) { 
           return 2; 
         }
-        Result result3 = tx.run("MATCH path=(a:actor {id: $x})-[r:ACTED_IN]-(b:movie {id: $y})\r\n" + 
+        Result result3 = tx.run("MATCH path=(a:actor {id: $x})-[r:ACTED_IN]-"
+            + "(b:movie {id: $y})\r\n" + 
             "RETURN path;", parameters("x", actorID, "y", movieID)); 
         if(result3.hasNext()) {
           return 3;
@@ -93,7 +100,9 @@ public class Neo4jDatabase {
       }catch(Exception e){ 
         return 1; 
       }
-      session.writeTransaction(tx -> tx.run("MATCH (a:actor {id:$x})," + "(b:movie {id:$y})\n" + "MERGE (a)-[r:ACTED_IN]->(b)\n" + "RETURN r", parameters("x", actorID, "y", movieID))); 
+      session.writeTransaction(tx -> tx.run("MATCH (a:actor {id:$x})," + "(b:movie "
+          + "{id:$y})\n" + "MERGE (a)-[r:ACTED_IN]->(b)\n" + "RETURN r", 
+          parameters("x", actorID, "y", movieID))); 
       session.close(); 
       return 0;
     }
@@ -105,7 +114,8 @@ public class Neo4jDatabase {
   public int getActor(String actorID) { 
     try(Session session = driver.session()){
       try(Transaction tx = session.beginTransaction()){ 
-        Result result = tx.run("MATCH (j:actor {id:$x}) \nRETURN j.name", parameters("x", actorID)); 
+        Result result = tx.run("MATCH (j:actor {id:$x}) \nRETURN j.name", 
+            parameters("x", actorID)); 
         if(!result.hasNext()) {
           return 2; 
         }
@@ -113,7 +123,8 @@ public class Neo4jDatabase {
         deserialized.put("actorId", actorID);
         deserialized.put("name", result.next().get("j.name").asString());
         
-        Result result2 = tx.run("MATCH (:actor {id:$x})-->(movie) \nRETURN movie.id", parameters("x", actorID)); 
+        Result result2 = tx.run("MATCH (:actor {id:$x})-->(movie) \nRETURN movie.id", 
+            parameters("x", actorID)); 
         ArrayList<String> movieTracker = new ArrayList<>();
         while(result2.hasNext()){ 
           movieTracker.add(result2.next().get("movie.id").asString());
@@ -136,7 +147,8 @@ public class Neo4jDatabase {
     try(Session session = driver.session()){
       try(Transaction tx = session.beginTransaction()){
         
-        Result result = tx.run("MATCH (j:movie {id:$x}) \n RETURN j.name", parameters("x", movieID));
+        Result result = tx.run("MATCH (j:movie {id:$x}) \n RETURN j.name", 
+            parameters("x", movieID));
         if(!result.hasNext()) {
           return 2;
         }
@@ -144,7 +156,8 @@ public class Neo4jDatabase {
         deserialized.put("name", result.next().get("j.name").asString());
         deserialized.put("movieId", movieID);
         
-        Result result2 = tx.run("MATCH (:movie {id:$x})<--(actor) \n return actor.id", parameters("x", movieID));
+        Result result2 = tx.run("MATCH (:movie {id:$x})<--(actor) \n return actor.id", 
+            parameters("x", movieID));
         
         ArrayList<String> actorTracker = new ArrayList<>();
         
@@ -166,27 +179,24 @@ public class Neo4jDatabase {
   
   
   public int hasRelationship(String actorID, String movieID) {
-    //this.Response = "";
     try(Session session = driver.session()){
       try(Transaction tx = session.beginTransaction()){
-        
-        
-        Result result2 = tx.run("MATCH (j:actor {id:$x}) \nRETURN j", parameters("x", actorID)); 
-        Result result3 = tx.run("MATCH (j:movie {id:$x}) \nRETURN j", parameters("x", movieID)); 
+
+        Result result2 = tx.run("MATCH (j:actor {id:$x}) \nRETURN j", 
+            parameters("x", actorID)); 
+        Result result3 = tx.run("MATCH (j:movie {id:$x}) \nRETURN j", 
+            parameters("x", movieID)); 
         
         if(!result2.hasNext() || !result3.hasNext()) {
           return 2;
         }
-        
-        
-        Result result = tx.run("MATCH (j:actor{id:$x}) -[r]->(m:movie{id:$y}) RETURN r", parameters("x", actorID, "y", movieID));
-        
-        
+
+        Result result = tx.run("MATCH (j:actor{id:$x}) -[r:ACTED_IN]->(m:movie{id:$y}) RETURN r", 
+            parameters("x", actorID, "y", movieID));
+
         deserialized.put("actorId", actorID);
         deserialized.put("movieId", movieID);
-        
-        
-        
+
         if(result.hasNext()) {
           tx.close();
           session.close();
@@ -216,7 +226,8 @@ public class Neo4jDatabase {
   public int computeBaconNumber(String actorID) {
     try(Session session = driver.session()){
       try(Transaction tx = session.beginTransaction()){
-        Result result2 = tx.run("MATCH (j:actor {id:$x}) \nRETURN j.id", parameters("x", actorID)); 
+        Result result2 = tx.run("MATCH (j:actor {id:$x}) \nRETURN j.id", 
+            parameters("x", actorID)); 
         if(!result2.hasNext()) { 
           return 3; 
         }
@@ -248,8 +259,6 @@ public class Neo4jDatabase {
     }
   }
   
-  
-  
   public int computeBaconPath(String actorID) {
     deserialized = new JSONObject();
     try(Session session = driver.session()){
@@ -268,10 +277,10 @@ public class Neo4jDatabase {
         }
         
         if(this.deserialized.getInt("baconNumber") == 0) { 
-          Result result2 = tx.run("MATCH (:actor {id:$x})-->(movie) \nRETURN movie.id", parameters("x", actorID)); 
+          Result result2 = tx.run("MATCH (:actor {id:$x})-->(movie) \nRETURN movie.id", 
+              parameters("x", actorID)); 
           JSONObject temporary = new JSONObject();
           temporary.put("actorId", actorID);
-          //what if no movie exists!!! ? ? ? ? ?
           temporary.put("movieId", result2.next().get("movie.id").asString());
           tracker.add(temporary);
           deserialized.put("baconPath", tracker);
@@ -279,19 +288,21 @@ public class Neo4jDatabase {
           session.close();
           return 0; 
         }
-        Result result = tx.run("MATCH (start:actor {id:$x}),(KevBac:actor {id: \"nm0000102\" }), p = shortestPath((start)-[*..]-(KevBac)) return [node in nodes(p) | node.id] as nodesInPath", parameters("x", actorID));
+        Result result = tx.run("MATCH (start:actor {id:$x}),(KevBac:actor "
+            + "{id: \"nm0000102\" }), p = shortestPath((start)-[*..]-(KevBac)) "
+            + "return [node in nodes(p) | node.id] as nodesInPath", parameters("x", actorID));
         
         Value temp = result.next().get("nodesInPath");
         
         for(int i = 1; i < temp.size(); i+=2) { 
           if(i%2==1) { 
               JSONObject temporary = new JSONObject();
-              temporary.put("actorId", temp.get(i-1).toString().replaceAll("\"", ""));
-              temporary.put("movieId", temp.get(i).toString().replaceAll("\"", ""));
+              temporary.put("actorId", temp.get(i-1).asString()); 
+              temporary.put("movieId", temp.get(i).asString()); 
               tracker.add(temporary);
               JSONObject temporary2 = new JSONObject();
-              temporary2.put("actorId", temp.get(i+1).toString().replaceAll("\"", ""));
-              temporary2.put("movieId", temp.get(i).toString().replaceAll("\"", ""));
+              temporary2.put("actorId", temp.get(i+1).asString()); 
+              temporary2.put("movieId", temp.get(i).asString()); 
               tracker.add(temporary2);
           }
         }

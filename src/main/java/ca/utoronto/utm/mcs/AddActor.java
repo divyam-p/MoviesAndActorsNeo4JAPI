@@ -26,8 +26,6 @@ public class AddActor implements HttpHandler
     String body = Utils.convert(r.getRequestBody());
     JSONObject deserialized = new JSONObject(body);
     
-    // Don't add two actors with the same ID!!!!!!!!
-    
     String actor = "";
     String actorID = "";
     if(deserialized.has("name")) {
@@ -52,9 +50,6 @@ public class AddActor implements HttpHandler
         r.sendResponseHeaders(200, -1);
       }
     }
-
     
   }
-
-
 }

@@ -19,7 +19,6 @@ public class HasRelationship implements HttpHandler{
     } catch (Exception e) {
       e.printStackTrace();
     }
-    
   }
 
   private void handleGet(HttpExchange r) throws IOException, JSONException {
@@ -57,12 +56,7 @@ public class HasRelationship implements HttpHandler{
         os.write((response.toString()).getBytes());
         os.close();
       }
-    }
-    
-    
-    
-    
-    
+    }   
   }
 
 }

@@ -19,8 +19,7 @@ public class ComputeBaconNumber implements HttpHandler{
       e.printStackTrace();
     }
   }
-  
-  
+   
   private void handleGet(HttpExchange r) throws IOException, JSONException{
     String body = Utils.convert(r.getRequestBody());
     JSONObject deserialized = new JSONObject(body);

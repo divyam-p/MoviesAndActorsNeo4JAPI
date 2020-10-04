@@ -53,8 +53,6 @@ public class GetActor implements HttpHandler{
         os.close();
       }
     }
-    
-    
   }
 
 }

@@ -24,18 +24,14 @@ public class AddMovie implements HttpHandler{
     String body = Utils.convert(r.getRequestBody());
     JSONObject deserialized = new JSONObject(body);
     
-    // Don't add two actors with the same ID!!!!!!!!
-    
     String movie = "";
     String movieID = "";
     if(deserialized.has("name")) {
-      movie = deserialized.getString("name");
-      
+      movie = deserialized.getString("name");  
     }
     if(deserialized.has("movieId")) {
       movieID = deserialized.getString("movieId");
-    }
-    
+    } 
     
     if(!deserialized.has("name") || !deserialized.has("movieId")) {
       r.sendResponseHeaders(400, -1);
