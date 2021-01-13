@@ -5,7 +5,8 @@ To get the project locally on your computer :
   * for Eclipse : 
     * go to File -> Import -> Maven -> Existing Maven Projects and open at location of project 
     * Right click the project -> Maven Build.. and input "compile exec:java" in the goals input box 
-    * apply and close and then run App.java, the server should have started on port 8080
+    * apply and close and then run App.java, the server should have started on port 8080 to which API calls can be made 
+    * A neo4J database also needs to be running with password "1234" on "bolt://localhost:7687" 
 
 # Built With 
 * Java 
@@ -19,6 +20,9 @@ To get the project locally on your computer :
 
 # Project Images 
 
+<p align="center">
+    <img src="readme_imgs/pic1.png" alt="Image">
+ 
 # Acknowledgements 
 Made By: 
 * Divyam Patel 
