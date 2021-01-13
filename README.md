@@ -1,4 +1,11 @@
 # Getting Started 
+To get the project locally on your computer : 
+* clone the repo: https://github.com/divyam-p/MoviesAndActorsNeo4JAPIClone
+* open with some IDE  
+  * for Eclipse : 
+    * go to File -> Import -> Maven -> Existing Maven Projects and open at location of project 
+    * Right click the project -> Maven Build.. and input "compile exec:java" in the goals input box 
+    * apply and close and then run App.java, the server should have started on port 8080
 
 # Built With 
 * Java 
